@@ -93,79 +93,79 @@ public class ClassDependencies {
 							}); // field.forEach
 						}); // n.findAll.forEach
 
-//						n.getMethods().forEach(method -> {
-//							System.out.println("Method name : " + method.getName());
-////							System.out.println("Method type : " + method.getType());
-//
-//							new VoidVisitorAdapter<Map<String, Set<String>>>() {
-//								public void visit(MethodCallExpr mce, Map<String, Set<String>> arg) {
-//									super.visit(mce, arg);
-//									System.out.println(" [L " + mce.getBegin().get().line + "] " + mce);
-//									try {
-//
-//										CombinedTypeSolver combinedTypeSolver = getCombinedTypeSolver();
-//										JavaParserFacade javaParserFacade = JavaParserFacade.get(combinedTypeSolver);
-//										SymbolReference<ResolvedMethodDeclaration> methodRef = javaParserFacade
-//												.solve(mce);
-//										if (methodRef.isSolved()) {
-//
-//											ResolvedMethodDeclaration methodDecl = methodRef
-//													.getCorrespondingDeclaration();
-//											System.out.println("Resolved Method Declaration: "
-//													+ methodDecl.getQualifiedSignature());
-//											String className = methodDecl.getPackageName() + "."
-//													+ methodDecl.getClassName();
-//											System.out
-//													.println("Resolved Method Declaration Invoking class " + className);
-//
-//											Set<String> dep = arg.get(fullyQualifiedClassName);
-//											if (classNames.contains(className)) {
-//												dep.add(className);
-//											}
-//
-//											if (classNames.contains(className)) {
-//												ResolvedReferenceTypeDeclaration refType = combinedTypeSolver
-//														.solveType(className);
-//												if (refType.isInterface()) {
-//													System.out.println("It is an interface  " + className);
-//													// Find implementing this interface.
-//
-//													// showReferenceTypeDeclaration(combinedTypeSolver.solveType(findImplentation
-//													// (className)));
-//													dep.add(findImplentation(className));
-//												} else {
-//
-//													// showReferenceTypeDeclaration(combinedTypeSolver.solveType(className));
-//													dep.add(className);
-//												}
-//												for (int temp = 0; temp < methodDecl.getNumberOfParams(); temp++) {
-//													ResolvedParameterDeclaration param = methodDecl.getParam(temp);
-//
-//													if (classNames.contains(param.describeType())) {
-//														dep.add(param.describeType());
-//														System.out.println(
-//																"Added dependent Param Type " + param.describeType());
-//													}
-//
-//												}
-//											} else {
-//												System.out.println(className
-//														+ " Need not be resolved as class not in scanned Package");
-//											}
-//										}
-//									} catch (UnsolvedSymbolException ex) {
-//										ex.printStackTrace();
-//										// throw ex;
-//									} catch (Exception ex) {
-//										System.out.println("Generic Exception " + ex.getLocalizedMessage());
-//
-//										ex.printStackTrace();
-//									}
-//								} // visit method
-//
-//							}// adaptor object creation
-//									.visit(method, collector);
-//						}); // each method for Each ends.
+						n.getMethods().forEach(method -> {
+							System.out.println("Method name : " + method.getName());
+//							System.out.println("Method type : " + method.getType());
+
+							new VoidVisitorAdapter<Map<String, Set<String>>>() {
+								public void visit(MethodCallExpr mce, Map<String, Set<String>> arg) {
+									super.visit(mce, arg);
+									System.out.println(" [L " + mce.getBegin().get().line + "] " + mce);
+									try {
+
+										CombinedTypeSolver combinedTypeSolver = getCombinedTypeSolver();
+										JavaParserFacade javaParserFacade = JavaParserFacade.get(combinedTypeSolver);
+										SymbolReference<ResolvedMethodDeclaration> methodRef = javaParserFacade
+												.solve(mce);
+										if (methodRef.isSolved()) {
+
+											ResolvedMethodDeclaration methodDecl = methodRef
+													.getCorrespondingDeclaration();
+											System.out.println("Resolved Method Declaration: "
+													+ methodDecl.getQualifiedSignature());
+											String className = methodDecl.getPackageName() + "."
+													+ methodDecl.getClassName();
+											System.out
+													.println("Resolved Method Declaration Invoking class " + className);
+
+											Set<String> dep = arg.get(fullyQualifiedClassName);
+											if (classNames.contains(className)) {
+												dep.add(className);
+											}
+
+											if (classNames.contains(className)) {
+												ResolvedReferenceTypeDeclaration refType = combinedTypeSolver
+														.solveType(className);
+												if (refType.isInterface()) {
+													System.out.println("It is an interface  " + className);
+													// Find implementing this interface.
+
+													// showReferenceTypeDeclaration(combinedTypeSolver.solveType(findImplentation
+													// (className)));
+													dep.add(findImplentation(className));
+												} else {
+
+													// showReferenceTypeDeclaration(combinedTypeSolver.solveType(className));
+													dep.add(className);
+												}
+												for (int temp = 0; temp < methodDecl.getNumberOfParams(); temp++) {
+													ResolvedParameterDeclaration param = methodDecl.getParam(temp);
+
+													if (classNames.contains(param.describeType())) {
+														dep.add(param.describeType());
+														System.out.println(
+																"Added dependent Param Type " + param.describeType());
+													}
+
+												}
+											} else {
+												System.out.println(className
+														+ " Need not be resolved as class not in scanned Package");
+											}
+										}
+									} catch (UnsolvedSymbolException ex) {
+										ex.printStackTrace();
+										// throw ex;
+									} catch (Exception ex) {
+										System.out.println("Generic Exception " + ex.getLocalizedMessage());
+
+										ex.printStackTrace();
+									}
+								} // visit method
+
+							} // adaptor object creation
+									.visit(method, collector);
+						}); // each method for Each ends.
 
 					}
 
@@ -250,7 +250,7 @@ public class ClassDependencies {
 	}
 
 	public static void main(String[] args) {
-		
+		HashMap<String ,ArrayList<String>> extractdata = new HashMap<>();
 		File projectDir = new File(filePath);
 		ClassDependencies classDepencies = new ClassDependencies();
 		mapClassAndDependencies = classDepencies.listDependantClassesInaFolder(projectDir);
@@ -262,32 +262,38 @@ public class ClassDependencies {
 		}
 		
 		for (String key : mapClassAndDependencies.keySet()) { //
-			
 			for (String controllerKey : listOfControllers)
-				if(controllerKey.contains(args[0])) {
 				if (key.contains(controllerKey)) {
 					mapControllerAndDependencies.put(key, new HashSet<String>());
 					classDepencies.recursiveCall(key, mapClassAndDependencies.get(key));
 				}
 		}
-		}
 		Set<String> keySetControllers = mapControllerAndDependencies.keySet();
+		String methodName = args[1].split("-")[0];
+		extractdata.put(args[0], new ArrayList<String>());
 		
-
 		
 		for (String key : keySetControllers) {
+			if(key.contains(args[0])) {
 			System.out.println(
 					"Controller Key : " + key + " Full Dependecies  Value : " + mapControllerAndDependencies.get(key));
-
+			if(!extractdata.get(args[0]).contains(mapControllerAndDependencies.get(key)))
+	   		{
+	   			//extractdata.put(methodName.split(" ")[0],new ArrayList<String>());
+	   			extractdata.get(args[0]).addAll(mapControllerAndDependencies.get(key));
+	   			
+	   		}
+	   			   		}
 		}
 		
+	
+
 		try {
-			copyFile(mapControllerAndDependencies,args[1]);
+			copyFile(extractdata,methodName);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 		//mapControllerAndDependencies - has full dependencies for each controller.
 
 	}
@@ -314,7 +320,7 @@ public class ClassDependencies {
     }
 	
 	
-	public static void copyFile(Map<String, Set<String>> mapControllerAndDependencies2, String methodName) throws IOException{
+	public synchronized static void copyFile(HashMap<String, ArrayList<String>> extractdata, String methodName) throws IOException{
         final String targetFolder = "D:\\Shopeasy_Copy";    //destination folder for pasting
         final String readFolder = "C:\\Users\\44976\\Downloads\\ShoppingCart-master\\ShoppingCart-master\\src\\main\\java\\com"; //source folder path
         final String finalMethodName = methodName;
@@ -326,19 +332,20 @@ public class ClassDependencies {
 //        File file1 = new File(targetFolder+"\\"+finalMethodName+\\+"com");
         if(!file.exists()) {
         file.mkdir(); 
-       
-        for(String mName: mapControllerAndDependencies2.keySet()){
-        for (String c1 :mapControllerAndDependencies2.get(mName)){//converting className into path pattern
+        for(String key: extractdata.keySet()){
+        for (String c1 :extractdata.get(key)){//converting className into path pattern
+        	System.out.println(c1);
         fileList.forEach(e->{
                     if(e.getPath().contains(c1.replace(".","\\"))){
+                    	System.out.println(c1);
                         try {
                             //copying file here
                         	// if the directory does not exist, create itz
                         	createproject(methodName);
-                        	TimeUnit.MINUTES.sleep(4);
+                        	TimeUnit.MINUTES.sleep(2);
                             Files.copy(Paths.get(e.getPath()),Paths.get(javaproject+"\\"+e.getName()));
-                            TimeUnit.SECONDS.sleep(30);
-                            //printing log here
+                            TimeUnit.MINUTES.sleep(5);
+//                            //printing log here
                             createRepo(methodName);
                             System.out.println("copied "+e.getName()+" Path:"+e.getPath());
                         } catch (IOException | CoreException | InterruptedException ioException) {
@@ -356,7 +363,7 @@ public class ClassDependencies {
         
        
 
-	private static void createproject(String methodName) throws CoreException {
+	private synchronized static void createproject(String methodName) throws CoreException {
 		try
         {  
     		final String javaproject = methodName + "-DarchetypeArtifactId=maven-archetype-quickstart\\src\\main\\java\\com\\mycompany\\app";
@@ -370,7 +377,7 @@ public class ClassDependencies {
     }
 		
 	
-	public static void createRepo(String methodname) {
+	public synchronized static void createRepo(String methodname) {
     	try
         {   		
         	final String targetFolder = "D:\\Shopeasy_Copy";
@@ -476,10 +483,8 @@ public class ClassDependencies {
 						+ "\\org\\springframework\\webflow\\spring-js-resources\\2.3.3.RELEASE\\spring-js-resources-2.3.3.RELEASE.jar");
 	}
 
-
 	public final static String filePath = "source_to_parse/ShoppingCart-master/src"; // TODO: Change to location of source parse here.
-
-	public static Map<String, String> interfaceImplMap = null;
+public static Map<String, String> interfaceImplMap = null;
 	//public static Set<String> classNames = null;
 	public static Map<String, String> classNameAndLocation = null;
 	public static Map<String, Set<String>> mapClassAndDependencies = null;
