@@ -77,20 +77,24 @@ public class ClassDependencies {
 
 						Set<String> classNames =  classNameAndLocation.keySet();
 						n.findAll(FieldDeclaration.class).forEach(field -> {
-							field.getVariables().forEach(variable -> {
-								// Print the field's class typr
-//								System.out.println("Variable Type :=>" + variable.getType());
-								Set<String> dep = collector.get(n.getFullyQualifiedName().get());
-								if (classNames .contains(variable.getType())) {
-									dep.add(variable.getType().asString());
-								}
-								// Print the field's name
-								// TODO : type is custom defined to be added as dependent.
-//								System.out.println("Variable Name :=>" + variable.getName());
+							 field.getVariables().forEach(variable -> {
+	                                // Print the field's class type
+	                                String variable_Type = variable.getType().resolve().describe();
+	                                System.out.println("Variable Type :=>" +  variable_Type);
+	                                Set<String> dep = collector.get(n.getFullyQualifiedName().get());
+	                                if (classNames .contains(variable_Type)) {
+	                                    dep.add(variable_Type);
+	                                    System.out.println("Variable Type added :=>" + variable.getType());
+	                                }
+	                                // Print the field's name
+	                                // TODO : type is custom defined to be added as dependent.
+	                                System.out.println("Variable Name :=>" + variable.getName());
 
-								variable.getInitializer()
-										.ifPresent(initValue -> System.out.println(initValue.toString()));
-							}); // field.forEach
+	 
+
+	                                variable.getInitializer()
+	                                        .ifPresent(initValue -> System.out.println(initValue.toString()));
+	                            }); // field.forEach
 						}); // n.findAll.forEach
 
 						n.getMethods().forEach(method -> {
@@ -147,6 +151,10 @@ public class ClassDependencies {
 																"Added dependent Param Type " + param.describeType());
 													}
 
+												}
+												if (classNames.contains(methodDecl.getReturnType().describe())) {
+													dep.add(methodDecl.getReturnType().describe());
+													System.out.println ("Method return Type added" + methodDecl.getReturnType().describe());
 												}
 											} else {
 												System.out.println(className
@@ -248,9 +256,11 @@ public class ClassDependencies {
 				.forEach(m -> System.out.println(String.format("    %s", m.getQualifiedSignature())));
 		System.out.println();
 	}
-
-	public static void main(String[] args) {
-		HashMap<String ,ArrayList<String>> extractdata = new HashMap<>();
+	
+	
+public static void load () {
+		
+		HashMap<String, ArrayList<String>> extractdata = new HashMap<>();
 		File projectDir = new File(filePath);
 		ClassDependencies classDepencies = new ClassDependencies();
 		mapClassAndDependencies = classDepencies.listDependantClassesInaFolder(projectDir);
@@ -260,7 +270,7 @@ public class ClassDependencies {
 			System.out.println("Key : " + key + "   Value : " + mapClassAndDependencies.get(key));
 
 		}
-		
+
 		for (String key : mapClassAndDependencies.keySet()) { //
 			for (String controllerKey : listOfControllers)
 				if (key.contains(controllerKey)) {
@@ -269,33 +279,50 @@ public class ClassDependencies {
 				}
 		}
 		Set<String> keySetControllers = mapControllerAndDependencies.keySet();
+		//String methodName = args[1].split("-")[0];
+		
+
+		for (String key : keySetControllers) {
+			
+			
+				System.out.println("Controller Key : " + key + " Full Dependecies  Value : "
+						+ mapControllerAndDependencies.get(key));
+				
+		}
+
+		
+		// mapControllerAndDependencies - has full dependencies for each controller.
+	}
+
+	public static void main(String[] args) {
+		HashMap<String, ArrayList<String>> extractdata = new HashMap<>();
+		File projectDir = new File(filePath);
+		ClassDependencies classDepencies = new ClassDependencies();
+		
+		Set<String> keySetControllers = mapControllerAndDependencies.keySet();
 		String methodName = args[1].split("-")[0];
 		extractdata.put(args[0], new ArrayList<String>());
-		
-		
+
 		for (String key : keySetControllers) {
-			if(key.contains(args[0])) {
-			System.out.println(
-					"Controller Key : " + key + " Full Dependecies  Value : " + mapControllerAndDependencies.get(key));
-			if(!extractdata.get(args[0]).contains(mapControllerAndDependencies.get(key)))
-	   		{
-	   			//extractdata.put(methodName.split(" ")[0],new ArrayList<String>());
-	   			extractdata.get(args[0]).addAll(mapControllerAndDependencies.get(key));
-	   			
-	   		}
-	   			   		}
+			if (key.contains(args[0])) {
+				System.out.println("Controller Key : " + key + " Full Dependecies  Value : "
+						+ mapControllerAndDependencies.get(key));
+				if (!extractdata.get(args[0]).contains(mapControllerAndDependencies.get(key))) {
+					// extractdata.put(methodName.split(" ")[0],new ArrayList<String>());
+					extractdata.get(args[0]).addAll(mapControllerAndDependencies.get(key));
+
+				}
+			}
 		}
-		
-	
 
 		try {
-			copyFile(extractdata,methodName);
+
+			CopyFile.copyFile(extractdata, methodName);
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//mapControllerAndDependencies - has full dependencies for each controller.
-
 	}
 
 	public  void recursiveCall(final String controller, Set<String> dependencies) {
@@ -310,100 +337,19 @@ public class ClassDependencies {
 		}
 	}
 	
-	public static List<File> listAllFiles(final File folder) throws IOException {
-        // using Files.walk for getting all file and filtering based on predicate, look predicate topic on net if it confuses you
-        return Files.walk(Paths.get(folder.getPath()))
-                .filter(Files::isRegularFile)
-                .map(Path::toFile)
-                .filter(e->e.getName().contains(".java"))
-                .collect(Collectors.toList());
-    }
 	
 	
-	public synchronized static void copyFile(HashMap<String, ArrayList<String>> extractdata, String methodName) throws IOException{
-        final String targetFolder = "D:\\Shopeasy_Copy";    //destination folder for pasting
-        final String readFolder = "C:\\Users\\44976\\Downloads\\ShoppingCart-master\\ShoppingCart-master\\src\\main\\java\\com"; //source folder path
-        final String finalMethodName = methodName;
-        final String targetdir = targetFolder+"\\"+finalMethodName;
-        final String javaproject =targetdir+"\\"+finalMethodName + "-DarchetypeArtifactId=maven-archetype-quickstart\\src\\main\\java\\com\\mycompany\\app";
-        List<File> fileList = listAllFiles(new File(readFolder));  // getting list of files with .java in their name
-        //adding predicate filter for operation
-        File file = new File(targetFolder+"\\"+finalMethodName);
-//        File file1 = new File(targetFolder+"\\"+finalMethodName+\\+"com");
-        if(!file.exists()) {
-        file.mkdir(); 
-        for(String key: extractdata.keySet()){
-        for (String c1 :extractdata.get(key)){//converting className into path pattern
-        	System.out.println(c1);
-        fileList.forEach(e->{
-                    if(e.getPath().contains(c1.replace(".","\\"))){
-                    	System.out.println(c1);
-                        try {
-                            //copying file here
-                        	// if the directory does not exist, create itz
-                        	createproject(methodName);
-                        	TimeUnit.MINUTES.sleep(2);
-                            Files.copy(Paths.get(e.getPath()),Paths.get(javaproject+"\\"+e.getName()));
-                            TimeUnit.MINUTES.sleep(5);
-//                            //printing log here
-                            createRepo(methodName);
-                            System.out.println("copied "+e.getName()+" Path:"+e.getPath());
-                        } catch (IOException | CoreException | InterruptedException ioException) {
-                            ioException.printStackTrace();
-                        }
-                    }
-                });
-        }
-        }
-        }
-        
-        }
-        
+	
+	
+	
+	
         
         
        
 
-	private synchronized static void createproject(String methodName) throws CoreException {
-		try
-        {  
-    		final String javaproject = methodName + "-DarchetypeArtifactId=maven-archetype-quickstart\\src\\main\\java\\com\\mycompany\\app";
-    		Runtime.getRuntime().exec("cmd /c start cmd.exe /K \"cd .. && cd .. && cd Shopeasy_Copy && cd "+methodName+"&& mvn archetype:generate -DgroupId=com.mycompany.app -DartifactId="+methodName+"-DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=1.4 -DinteractiveMode=false &&  cd "+javaproject ); 
-        } 
-        catch (Exception e) 
-        { 
-            System.out.println("HEY Buddy ! U r Doing Something Wrong "); 
-            e.printStackTrace(); 
-        } 
-    }
-		
 	
-	public synchronized static void createRepo(String methodname) {
-    	try
-        {   		
-        	final String targetFolder = "D:\\Shopeasy_Copy";
-        	final String localPath = targetFolder+"\\"+methodname;
-        	File file = new File(localPath);
-        	Git git = Git.init().setDirectory(file).call();
-            System.out.println("Created repository: " + git.getRepository().getDirectory());
-            File myFile = new File(git.getRepository().getDirectory().getParent(), "testfile");
-            if (!myFile.createNewFile()) {
-                throw new IOException("Could not create file " + myFile);
-            }
-    
-        GitHub github = new GitHubBuilder().withPassword("PriyankaN2", "Priya#123!").build();
-    	GHRepository repo = github.createRepository(
-    	  methodname,"this is my new repository",
-    	  "https://www.kohsuke.org/",true/*public*/);
-    		
-    		Runtime.getRuntime().exec("cmd /c start cmd.exe /K \"cd .. && cd .. && cd Shopeasy_Copy && cd "+methodname+"&& git init &&  git add . && git commit -m "+methodname+" && git remote add origin https://github.com/PriyankaN2/"+methodname+".git && git push origin master"); 
-        } 
-        catch (Exception e) 
-        { 
-            System.out.println("HEY Buddy ! U r Doing Something Wrong "); 
-            e.printStackTrace(); 
-        } 
-    	
-    }
+	
+	
 
 	public static List<String> getJarFolders() {
 
@@ -499,5 +445,6 @@ public static Map<String, String> interfaceImplMap = null;
 		interfaceImplMap = ListInterface.listImplementation(new File(filePath), classNameAndLocation.keySet());
 		listOfControllers = ListMethods.getClassesWithMethodNames(new File(filePath)).keySet();
 		mapControllerAndDependencies = new HashMap<String, Set<String>>();
+		load ();
 	}
 }

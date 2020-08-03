@@ -17,7 +17,9 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	// https://mvnrepository.com/artifact/org.javassist/javassist
+	compile group: 'com.github.javaparser', name: 'javaparser-symbol-solver-core', version: '3.16.1'
+	 compile group: 'org.reactivestreams', name: 'reactive-streams', version: '1.0.0'
+	
 
 	
 }

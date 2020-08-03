@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
@@ -24,6 +23,7 @@ import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeS
 import com.google.common.base.Strings;
 
 import me.tomassetti.support.DirExplorer;
+
 
 public class ListMethods {
 	static List<String> listOfControllerClasses = new ArrayList<String>();
@@ -59,9 +59,10 @@ public class ListMethods {
 							System.out.println("Method name : " + method.getName() + " Declaration "
 									+ method.getDeclarationAsString());
 							System.out.println("Method type : " + method.getType());
-
-							String methodNameCollected = method.getDeclarationAsString(); // method.getNameAsString();
-																							// shows only method name
+							String methodName = method.getDeclarationAsString().split("\\s")[2]; // method.getNameAsString();
+							String methodNameCollected = methodName.split("\\(")[0].concat("->"+classNameCollected);		// shows only method name
+//						String methodNameCollected = method.getDeclarationAsString(); // method.getNameAsString();
+																		// shows only method name
 
 							collector.get(classNameCollected).add(methodNameCollected);
 
@@ -130,6 +131,11 @@ public class ListMethods {
 		}
 		// listMethodCalls(projectDir);
 	}
+
+	
+	
+	
+	
 
 	public static List<String> getJarFolders() {
 
