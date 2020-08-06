@@ -19,6 +19,14 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	compile group: 'com.github.javaparser', name: 'javaparser-symbol-solver-core', version: '3.16.1'
 	 compile group: 'org.reactivestreams', name: 'reactive-streams', version: '1.0.0'
+	 // https://mvnrepository.com/artifact/org.glassfish.jersey.media/jersey-media-moxy
+compile group: 'org.glassfish.jersey.media', name: 'jersey-media-moxy', version: '3.0.0-M6'
+// https://mvnrepository.com/artifact/org.json/json
+// https://mvnrepository.com/artifact/net.sf.flexjson/flexjson
+compile group: 'net.sf.flexjson', name: 'flexjson', version: '3.3'
+
+
+	 
 	
 
 	

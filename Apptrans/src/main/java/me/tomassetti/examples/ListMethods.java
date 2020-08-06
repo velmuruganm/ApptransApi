@@ -60,7 +60,8 @@ public class ListMethods {
 									+ method.getDeclarationAsString());
 							System.out.println("Method type : " + method.getType());
 							String methodName = method.getDeclarationAsString().split("\\s")[2]; // method.getNameAsString();
-							String methodNameCollected = methodName.split("\\(")[0].concat("->"+classNameCollected);		// shows only method name
+							String methodNameCollected = methodName.split("\\(")[0];
+//									.concat("->"+classNameCollected);		// shows only method name
 //						String methodNameCollected = method.getDeclarationAsString(); // method.getNameAsString();
 																		// shows only method name
 
@@ -118,24 +119,54 @@ public class ListMethods {
 
 	public static void main(String[] args) {
 		File projectDir = new File(filePath);
-
-		// new
-		// File("D:/github/analyze-java-code-examples/src/main/java/me/tomassetti/examples");
-
 		Map<String, List<String>> map = getClassesWithMethodNames(projectDir);
-
+		analyser(map);
+		
+	
+	}
+	
+	public Map<String, List<String>> getControllers() {
+		File projectDir = new File(filePath);
+		Map<String, List<String>> map = getClassesWithMethodNames(projectDir);
 		Set<String> keySet = map.keySet();
 
 		for (String key : keySet) {
 			System.out.println("Key : " + key + "   Value : " + map.get(key));
 		}
-		// listMethodCalls(projectDir);
+		return map;
 	}
-
 	
 	
+	public static ParentItem analyser(Map<String, List<String>> map) {
+		
+		Set<String> keySet = map.keySet();
+		ParentItem root = new ParentItem("root", "class");
+		for (String className : keySet)
+		{
+			ParentItem cls = new ParentItem(className, "class");
+				for(String methodName : map.get(className))
+				{
+					ChildItem chd = new ChildItem(methodName, "method");
+					cls.Add(chd);
+					System.out.println(chd);
+//					System.out.println("name :" + chd.name + 
+//							" and type :" + chd.type);
+				}
+		root.Add(cls);
+		}
+		System.out.println(root);
+//		System.out.println("name :" + root.name + 
+//                " and type :" + root.type);
+		return root;
+	}
 	
-	
+	public ParentItem sourceanalyser() {
+		File projectDir = new File(filePath);
+		Map<String, List<String>> map = getClassesWithMethodNames(projectDir);
+		ParentItem results =   analyser(map);
+		return results;
+		
+	}
 
 	public static List<String> getJarFolders() {
 
