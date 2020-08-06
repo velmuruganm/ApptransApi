@@ -40,7 +40,7 @@ public class homecontroller {
 		return "{healthy:true}";
 	}
 	
-	@GetMapping(path = "/java")
+	@GetMapping(path = "/item-result")
     @Produces(MediaType.APPLICATION_JSON)
     public List<BaseItem> getanalyser()
     {
@@ -50,11 +50,10 @@ public class homecontroller {
 //		JSONSerializer serializer = new JSONSerializer().prettyPrint(true); // pretty print JSON
 //		String jsonStr = serializer.serialize(results);
 	      return results.getItems();
-//        String output = JsonConvert.SerializeObject(results);
     }
 	
 	
-	@GetMapping(path = "/listMethods")
+	@GetMapping(path = "/map-result")
     @Produces(MediaType.APPLICATION_JSON)
     public Map<String, List<String>> getControllers()
     {
@@ -67,52 +66,15 @@ public class homecontroller {
 //        String output = JsonConvert.SerializeObject(results);
     }
 	
-	
-	
-//	[HttpGet("getitems")]
-//	        [Produces("application/json")]
-//	        public JsonResult Get(String Appname)
-//	        {
-//	            SourceAnalyser sa = new SourceAnalyser();
-//	            //SourceVBAnalyser sa = new SourceVBAnalyser();
-//	            sa.AppName = Appname;
-//	            sa.StartAnalyse();
-//	            if (sa.getparent != null && sa.getparent.Items.Count() > 0)
-//	            {
-//	                return new JsonResult(JsonConvert.SerializeObject(sa.getparent.Items, Formatting.None));
-//	            }
-//	            else
-//	            {
-//	                return new JsonResult(null);
-//	            }
-//	        }
-//	
 
 	@GetMapping(path="/{className}/{methodName}")
 	public String getClassAndMethod (@PathVariable("className")String className,@PathVariable("methodName")String methodName) throws Exception
-
-	{
-			
+	{	
 		ClassDependencies.main(new String[]{ className ,methodName});
-  	    
-		return "Class Name :"+className+"  "+"Method Name :"+methodName;
-
-		
+  	    return "Class Name :"+className+"  "+"Method Name :"+methodName;
+	
 		
 	}
-	
-//	@GetMapping(path="/startAnalyser")
-//	public String getstartAnalyser ()
-//	{
-//			
-//		ListMethods.main();
-//  	    
-//		return "Class Name :"+className+"  "+"Method Name :"+methodName;
-//
-//		
-//		
-//	}
-	
 	
 }
 
