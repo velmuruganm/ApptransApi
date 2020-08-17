@@ -317,7 +317,12 @@ public static void load () {
 
 		try {
 
-			CopyFile.copyFile(extractdata, methodName);
+			try {
+				CopyFile.copyFile(extractdata, methodName);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jgit.api.Git;
 import org.kohsuke.github.GHRepository;
@@ -19,12 +20,12 @@ import org.kohsuke.github.GitHubBuilder;
 
 public class CopyFile {
 	
-	public static void copyFile(HashMap<String, ArrayList<String>> extractdata, String methodName ) throws IOException{
+	public static void copyFile(HashMap<String, ArrayList<String>> extractdata, String methodName ) throws IOException, InterruptedException{
         final String targetFolder = "D:\\Shopeasy_Copy";    //destination folder for pasting
         final String readFolder = "D:\\github\\ShoppingCart\\src\\main\\java\\com"; //source folder path
         final String finalMethodName = methodName;
         final String targetdir = targetFolder+"\\"+finalMethodName;
-        final String javaproject =targetdir+"\\"+finalMethodName + "\\src\\main\\java\\com\\mycompany\\app";
+        final String javaproject =targetdir+"\\"+finalMethodName + "\\src\\main\\java\\com";
         List<File> fileList = listAllFiles(new File(readFolder));  // getting list of files with .java in their name
         //adding predicate filter for operation
         File file = new File(targetFolder+"\\"+finalMethodName);
@@ -35,21 +36,30 @@ public class CopyFile {
         try {
 
 			createproject(methodName);
-			TimeUnit.MINUTES.sleep(2);
+			TimeUnit.SECONDS.sleep(45);
 			
 			
 		} catch (CoreException | InterruptedException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+//        deletedir(methodName);
+//        TimeUnit.SECONDS.sleep(10);
+        clonedir(methodName);
+        TimeUnit.SECONDS.sleep(10);
+        FileUtils.deleteDirectory(new File(javaproject+"\\mycompany"));
+       
         for(String key: extractdata.keySet()){
         for (String c1 :extractdata.get(key)){//converting className into path pattern
         fileList.forEach(e->{
-        	 String cp = key.split(".")[1];
+        	
         	if(e.getPath().contains(key.replace(".","\\"))) {
         	
         		 try {
-					Files.copy(Paths.get(e.getPath()),Paths.get(javaproject+"\\"+e.getName()));
+        			 
+        		   if(e.getName().contains("Controller"))
+        			   Files.copy(Paths.get(e.getPath()),Paths.get(javaproject+"\\controller\\"+e.getName()));
+					
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -61,8 +71,16 @@ public class CopyFile {
                     if(e.getPath().contains(c1.replace(".","\\"))){
                     	try {
                             //copying file here
-                       
-                            Files.copy(Paths.get(e.getPath()),Paths.get(javaproject+"\\"+e.getName()));
+                    		if (e.getName().contains("Dao")) {
+        						Files.copy(Paths.get(e.getPath()),Paths.get(javaproject+"\\dao\\"+e.getName()));
+                            				
+                    		}
+        			        if (e.getName().contains("Service")) { 
+        			        	Files.copy(Paths.get(e.getPath()),Paths.get(javaproject+"\\service\\"+e.getName()));
+        			        }
+        			        if (!e.getName().contains("Service") && !e.getName().contains("Dao") && !e.getName().contains("Controller")) 
+        			        	Files.copy(Paths.get(e.getPath()),Paths.get(javaproject+"\\model\\"+e.getName())); 
+                            
                        
                             System.out.println("copied "+e.getName()+" Path:"+e.getPath());
                         } catch (IOException ioException) {
@@ -83,9 +101,27 @@ public class CopyFile {
         createRepo(methodName);
         }
 	
-	 public static void createproject(String methodName) throws CoreException {
-	    	
+	
+	public static void clonedir(String methodName) throws IOException {
+		final String targetFolder = "D:\\Shopeasy_Copy";    //destination folder for pasting
+        final String readFolder = "D:\\github\\ShoppingCart\\src\\main\\java\\com"; //source folder path
+        final String targetdir = targetFolder+"\\"+methodName;
+        final String javaproject =targetdir+"\\"+methodName + "\\src\\main\\java\\com";
+        List<File> fileList = listAllFiles(new File(readFolder));  // getting list of files with .java in their name
+        //adding predicate filter for operation
+        
+       
+//        File file1 = new File(targetFolder+"\\"+finalMethodName+\\+"com");
+        
+        
+		Runtime.getRuntime().exec("cmd /c start cmd.exe /K \" cd .. && cd .. && c: && cd Users\\44976 && xcopy D:\\github\\ShoppingCart\\src\\main\\java\\com "+ javaproject + "/t /e" ); 
 
+	}
+	
+	
+	
+	
+	 public static void createproject(String methodName) throws CoreException {
 	    	try
 	        {  
 	    		
