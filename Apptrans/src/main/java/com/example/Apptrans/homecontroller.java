@@ -55,14 +55,14 @@ public class homecontroller  {
 	}
 	
 	
-	@GetMapping(path = "/item-result")
+	@GetMapping(path = "/{srcfolder}")
 	@CrossOrigin(origins = "http://localhost:3000")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getanalyser()
+    public String getanalyser(@PathVariable("srcfolder")String srcfolder)throws Exception
     {
-		
+		ListMethods.main(new String[]{ srcfolder.replace(".","\\") });
 		ListMethods list = new ListMethods();
-		ParentItem results = list.sourceanalyser();
+		ParentItem results = list.sourceanalyser(srcfolder.replace(".","\\"));
 //		JSONSerializer serializer = new JSONSerializer().prettyPrint(true); // pretty print JSON
 //		String jsonStr = serializer.serialize(results.getItems());
 //		String output = JsonConvert.SerializeObject(results);

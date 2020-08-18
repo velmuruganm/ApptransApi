@@ -118,14 +118,19 @@ public class ListMethods {
 	}
 
 	public static void main(String[] args) {
-		File projectDir = new File(filePath);
+		
+		final String filePath = args[0];
+		File projectDir = new File(args[0]);
+		
 		Map<String, List<String>> map = getClassesWithMethodNames(projectDir);
 		analyser(map);
+		sourceanalyser(args[0]);
 		
 	
 	}
 	
 	public Map<String, List<String>> getControllers() {
+		
 		File projectDir = new File(filePath);
 		Map<String, List<String>> map = getClassesWithMethodNames(projectDir);
 		Set<String> keySet = map.keySet();
@@ -160,8 +165,8 @@ public class ListMethods {
 		return root;
 	}
 	
-	public ParentItem sourceanalyser() {
-		File projectDir = new File(filePath);
+	public static ParentItem sourceanalyser(String srcfolder) {
+		File projectDir = new File(srcfolder);
 		Map<String, List<String>> map = getClassesWithMethodNames(projectDir);
 		ParentItem results =   analyser(map);
 		return results;
