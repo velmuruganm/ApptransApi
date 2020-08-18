@@ -16,6 +16,8 @@ import com.google.gson.GsonBuilder;
 
 import me.tomassetti.examples.BaseItem;
 import me.tomassetti.examples.ClassDependencies;
+import me.tomassetti.examples.ListInterface;
+
 import javax.ws.rs.POST;
 import javax.ws.rs.GET;
 
@@ -55,29 +57,27 @@ public class homecontroller  {
 	}
 	
 	
-	@GetMapping(path = "/{srcfolder}")
+	@GetMapping(path = "/items-result/{srcfolder}")
 	@CrossOrigin(origins = "http://localhost:3000")
     @Produces(MediaType.APPLICATION_JSON)
     public String getanalyser(@PathVariable("srcfolder")String srcfolder)throws Exception
     {
 		ListMethods.main(new String[]{ srcfolder.replace(".","\\") });
-		ListMethods list = new ListMethods();
-		ParentItem results = list.sourceanalyser(srcfolder.replace(".","\\"));
-//		JSONSerializer serializer = new JSONSerializer().prettyPrint(true); // pretty print JSON
-//		String jsonStr = serializer.serialize(results.getItems());
-//		String output = JsonConvert.SerializeObject(results);
+		ParentItem results = ListMethods.sourceanalyser(srcfolder.replace(".","\\"));
+		ClassDependencies.main(new String[] {srcfolder.replace(".","\\") });
+		ListInterface.main(new String[] {srcfolder.replace(".","\\") });
 		Gson gson = new Gson();
 		String json = gson.toJson(results.getItems());
 	      return json;
     }
 	
-	@GetMapping(path = "/map-result")
+	@GetMapping(path = "/map-result/{srcFolder}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Map<String, List<String>> getControllers()
+    public Map<String, List<String>> getControllers(@PathVariable("srcfolder")String srcfolder)throws Exception
     {
 		
 		ListMethods list = new ListMethods();
-		Map<String, List<String>> results = list.getControllers();
+		Map<String, List<String>> results = list.getControllers(srcfolder);
 		JSONSerializer serializer = new JSONSerializer().prettyPrint(true); // pretty print JSON
 		String jsonStr = serializer.serialize(results);
 	      return results;

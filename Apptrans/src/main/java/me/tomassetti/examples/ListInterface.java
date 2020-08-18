@@ -80,7 +80,7 @@ public class ListInterface {
 
 	
 	public static void main(String[] args) {
-		File projectDir = new File(filePath);
+		File projectDir = new File(args[0]);
 		Map<String, String> classNames = getlistOfClassOrInterface(projectDir);
 		
 		Map<String, String> map = listImplementation(projectDir, classNames.keySet());
@@ -90,7 +90,7 @@ public class ListInterface {
 		});
 	}
 
-	public final static String filePath = "SampleSrcToParse/src";
+//	public final static String filePath = "SampleSrcToParse/src";
 
 	private static class ImplNameCollector extends VoidVisitorAdapter<Map<String, String>> {
 

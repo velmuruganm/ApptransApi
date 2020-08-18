@@ -47,7 +47,7 @@ import me.tomassetti.support.DirExplorer;
 
 public class ClassDependencies {
 
-	public Map<String, Set<String>> listDependantClassesInaFolder(File projectDir) {
+	public Map<String, Set<String>> listDependantClassesInaFolder(File srcFolder) {
 		Map<String, Set<String>> returnValue = new HashMap<String, Set<String>>();
 
 		new DirExplorer((level, path, file) -> path.endsWith(".java"), (level, path, file) ->
@@ -107,7 +107,7 @@ public class ClassDependencies {
 									System.out.println(" [L " + mce.getBegin().get().line + "] " + mce);
 									try {
 
-										CombinedTypeSolver combinedTypeSolver = getCombinedTypeSolver();
+										CombinedTypeSolver combinedTypeSolver = getCombinedTypeSolver(srcFolder);
 										JavaParserFacade javaParserFacade = JavaParserFacade.get(combinedTypeSolver);
 										SymbolReference<ResolvedMethodDeclaration> methodRef = javaParserFacade
 												.solve(mce);
@@ -177,7 +177,7 @@ public class ClassDependencies {
 
 					}
 
-				}.visit(getCompilationUnit(file), collectorPerClass);
+				}.visit(getCompilationUnit( srcFolder), collectorPerClass);
 
 				returnValue.putAll(collectorPerClass);
 
@@ -194,7 +194,7 @@ public class ClassDependencies {
 			}
 		}
 
-		).explore(projectDir);
+		).explore(srcFolder);
 
 		for (String key : returnValue.keySet()) {
 			System.out.println(" Key : " + key + "   Value : " + returnValue.get(key));
@@ -212,9 +212,9 @@ public class ClassDependencies {
 	}
 
 	@SuppressWarnings("deprecation")
-	public CompilationUnit getCompilationUnit(File file) throws FileNotFoundException {
+	public CompilationUnit getCompilationUnit( File srcFolder ) throws FileNotFoundException {
 
-		CombinedTypeSolver combinedTypeSolver = getCombinedTypeSolver();
+		CombinedTypeSolver combinedTypeSolver = getCombinedTypeSolver(srcFolder);
 
 		JavaSymbolSolver symbolSolver = new JavaSymbolSolver(combinedTypeSolver);
 
@@ -222,13 +222,13 @@ public class ClassDependencies {
 				.setSymbolResolver(symbolSolver);
 
 		StaticJavaParser.setConfiguration(config);
-		return StaticJavaParser.parse(file);
+		return StaticJavaParser.parse(srcFolder);
 
 	}
 
-	public CombinedTypeSolver getCombinedTypeSolver() {
+	public CombinedTypeSolver getCombinedTypeSolver(File srcFolder) {
 		TypeSolver reflectionTypeSolver = new ReflectionTypeSolver();
-		TypeSolver javaParserTypeSolver = new JavaParserTypeSolver(filePath + "/main/java");
+		TypeSolver javaParserTypeSolver = new JavaParserTypeSolver(srcFolder + "/main/java");
 		CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
 		combinedTypeSolver.add(reflectionTypeSolver);
 		combinedTypeSolver.add(javaParserTypeSolver);
@@ -258,10 +258,10 @@ public class ClassDependencies {
 	}
 	
 	
-public static void load () {
+public static void load (String srcFolder) {
 		
 		HashMap<String, ArrayList<String>> extractdata = new HashMap<>();
-		File projectDir = new File(filePath);
+		File projectDir = new File(srcFolder);
 		ClassDependencies classDepencies = new ClassDependencies();
 		mapClassAndDependencies = classDepencies.listDependantClassesInaFolder(projectDir);
 
@@ -295,8 +295,9 @@ public static void load () {
 	}
 
 	public static void main(String[] args) {
+		getCall(args[0]);
 		HashMap<String, ArrayList<String>> extractdata = new HashMap<>();
-		File projectDir = new File(filePath);
+		File projectDir = new File(args[0]);
 		ClassDependencies classDepencies = new ClassDependencies();
 		
 		Set<String> keySetControllers = mapControllerAndDependencies.keySet();
@@ -341,20 +342,6 @@ public static void load () {
 			// else return; --implicit
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
-        
-        
-       
-
-	
-	
-	
 
 	public static List<String> getJarFolders() {
 
@@ -434,7 +421,7 @@ public static void load () {
 						+ "\\org\\springframework\\webflow\\spring-js-resources\\2.3.3.RELEASE\\spring-js-resources-2.3.3.RELEASE.jar");
 	}
 
-	public final static String filePath = "source_to_parse/ShoppingCart-master/src"; // TODO: Change to location of source parse here.
+//	public  String filePath ; // TODO: Change to location of source parse here.
 public static Map<String, String> interfaceImplMap = null;
 	//public static Set<String> classNames = null;
 	public static Map<String, String> classNameAndLocation = null;
@@ -444,12 +431,12 @@ public static Map<String, String> interfaceImplMap = null;
 	// public static Map<String, Set<String>> mapClassAndDependencies = null;
 
 	// public static Map<String, Set<String>> classNameAndDependants = null;
-	static {
-		classNameAndLocation = ListInterface.getlistOfClassOrInterface(new File(filePath));
+	public static void getCall(String srcFolder) {
+		classNameAndLocation = ListInterface.getlistOfClassOrInterface(new File(srcFolder));
 		//classNames = classNameAndLocation.keySet();
-		interfaceImplMap = ListInterface.listImplementation(new File(filePath), classNameAndLocation.keySet());
-		listOfControllers = ListMethods.getClassesWithMethodNames(new File(filePath)).keySet();
+		interfaceImplMap = ListInterface.listImplementation(new File(srcFolder), classNameAndLocation.keySet());
+		listOfControllers = ListMethods.getClassesWithMethodNames(new File(srcFolder)).keySet();
 		mapControllerAndDependencies = new HashMap<String, Set<String>>();
-		load ();
+		load (srcFolder);
 	}
 }

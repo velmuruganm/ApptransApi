@@ -29,7 +29,7 @@ public class ListMethods {
 	static List<String> listOfControllerClasses = new ArrayList<String>();
 	static String INIT = "Controller";
 
-	public static Map<String, List<String>> getClassesWithMethodNames(File projectDir) {
+	public static Map<String, List<String>> getClassesWithMethodNames(File srcFolder) {
 
 		Map<String, List<String>> collector = new HashMap<String, List<String>>();
 		collector.put(INIT, new ArrayList<String>()); // equivalent to init
@@ -78,15 +78,15 @@ public class ListMethods {
 			}
 		}
 
-		).explore(projectDir);
+		).explore(srcFolder);
 
 		return collector;
 	}
 
 	@SuppressWarnings("deprecation")
-	public static CompilationUnit getCompilationUnit(File file) throws FileNotFoundException {
+	public static CompilationUnit getCompilationUnit(File srcFolder ) throws FileNotFoundException {
 
-		CombinedTypeSolver combinedTypeSolver = getCombinedTypeSolver();
+		CombinedTypeSolver combinedTypeSolver = getCombinedTypeSolver(srcFolder);
 
 		JavaSymbolSolver symbolSolver = new JavaSymbolSolver(combinedTypeSolver);
 
@@ -94,13 +94,14 @@ public class ListMethods {
 				.setSymbolResolver(symbolSolver);
 
 		StaticJavaParser.setConfiguration(config);
-		return StaticJavaParser.parse(file);
+		return StaticJavaParser.parse(srcFolder);
 
 	}
 
-	public static CombinedTypeSolver getCombinedTypeSolver() {
+	public static CombinedTypeSolver getCombinedTypeSolver(File srcFolder) {
 		TypeSolver reflectionTypeSolver = new ReflectionTypeSolver();
-		TypeSolver javaParserTypeSolver = new JavaParserTypeSolver(filePath + "/main/java");
+		System.out.println(srcFolder);
+		TypeSolver javaParserTypeSolver = new JavaParserTypeSolver(srcFolder);
 		CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
 		combinedTypeSolver.add(reflectionTypeSolver);
 		combinedTypeSolver.add(javaParserTypeSolver);
@@ -125,13 +126,14 @@ public class ListMethods {
 		Map<String, List<String>> map = getClassesWithMethodNames(projectDir);
 		analyser(map);
 		sourceanalyser(args[0]);
+		getControllers(args[0]);
 		
 	
 	}
 	
-	public Map<String, List<String>> getControllers() {
+	public static Map<String, List<String>> getControllers(String srcFolder) {
 		
-		File projectDir = new File(filePath);
+		File projectDir = new File(srcFolder);
 		Map<String, List<String>> map = getClassesWithMethodNames(projectDir);
 		Set<String> keySet = map.keySet();
 
@@ -251,6 +253,6 @@ public class ListMethods {
 						+ "\\org\\springframework\\webflow\\spring-js-resources\\2.3.3.RELEASE\\spring-js-resources-2.3.3.RELEASE.jar");
 	}
 
-	public final static String filePath = "source_to_parse/ShoppingCart-master/src"; // TODO: Change to location of source parse here.
+	//public final static String filePath = "source_to_parse/ShoppingCart-master/src"; // TODO: Change to location of source parse here.
 
 }
