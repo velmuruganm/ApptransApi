@@ -47,7 +47,7 @@ import me.tomassetti.support.DirExplorer;
 
 public class ClassDependencies {
 
-	public Map<String, Set<String>> listDependantClassesInaFolder(File srcFolder) {
+	public Map<String, Set<String>> listDependantClassesInaFolder(File projectDir , String filePath) {
 		Map<String, Set<String>> returnValue = new HashMap<String, Set<String>>();
 
 		new DirExplorer((level, path, file) -> path.endsWith(".java"), (level, path, file) ->
@@ -107,7 +107,7 @@ public class ClassDependencies {
 									System.out.println(" [L " + mce.getBegin().get().line + "] " + mce);
 									try {
 
-										CombinedTypeSolver combinedTypeSolver = getCombinedTypeSolver(srcFolder);
+										CombinedTypeSolver combinedTypeSolver = getCombinedTypeSolver(projectDir, filePath);
 										JavaParserFacade javaParserFacade = JavaParserFacade.get(combinedTypeSolver);
 										SymbolReference<ResolvedMethodDeclaration> methodRef = javaParserFacade
 												.solve(mce);
@@ -177,7 +177,7 @@ public class ClassDependencies {
 
 					}
 
-				}.visit(getCompilationUnit( srcFolder), collectorPerClass);
+				}.visit(getCompilationUnit( file , filePath), collectorPerClass);
 
 				returnValue.putAll(collectorPerClass);
 
@@ -194,7 +194,7 @@ public class ClassDependencies {
 			}
 		}
 
-		).explore(srcFolder);
+		).explore(projectDir);
 
 		for (String key : returnValue.keySet()) {
 			System.out.println(" Key : " + key + "   Value : " + returnValue.get(key));
@@ -212,9 +212,9 @@ public class ClassDependencies {
 	}
 
 	@SuppressWarnings("deprecation")
-	public CompilationUnit getCompilationUnit( File srcFolder ) throws FileNotFoundException {
+	public CompilationUnit getCompilationUnit( File file , String filePath ) throws FileNotFoundException {
 
-		CombinedTypeSolver combinedTypeSolver = getCombinedTypeSolver(srcFolder);
+		CombinedTypeSolver combinedTypeSolver = getCombinedTypeSolver(file, filePath);
 
 		JavaSymbolSolver symbolSolver = new JavaSymbolSolver(combinedTypeSolver);
 
@@ -222,13 +222,13 @@ public class ClassDependencies {
 				.setSymbolResolver(symbolSolver);
 
 		StaticJavaParser.setConfiguration(config);
-		return StaticJavaParser.parse(srcFolder);
+		return StaticJavaParser.parse(file);
 
 	}
 
-	public CombinedTypeSolver getCombinedTypeSolver(File srcFolder) {
+	public CombinedTypeSolver getCombinedTypeSolver(File file , String filePath) {
 		TypeSolver reflectionTypeSolver = new ReflectionTypeSolver();
-		TypeSolver javaParserTypeSolver = new JavaParserTypeSolver(srcFolder + "/main/java");
+		TypeSolver javaParserTypeSolver = new JavaParserTypeSolver(filePath + "/main/java");
 		CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
 		combinedTypeSolver.add(reflectionTypeSolver);
 		combinedTypeSolver.add(javaParserTypeSolver);
@@ -258,12 +258,12 @@ public class ClassDependencies {
 	}
 	
 	
-public static void load (String srcFolder) {
+public static void load (String filePath) {
 		
 		HashMap<String, ArrayList<String>> extractdata = new HashMap<>();
-		File projectDir = new File(srcFolder);
+		File projectDir = new File(filePath);
 		ClassDependencies classDepencies = new ClassDependencies();
-		mapClassAndDependencies = classDepencies.listDependantClassesInaFolder(projectDir);
+		mapClassAndDependencies = classDepencies.listDependantClassesInaFolder(projectDir, filePath);
 
 		Set<String> keySet = mapClassAndDependencies.keySet();
 		for (String key : keySet) {
@@ -295,9 +295,10 @@ public static void load (String srcFolder) {
 	}
 
 	public static void main(String[] args) {
-		getCall(args[0]);
+		final String filePath = args[0];
+		getCall(filePath);
 		HashMap<String, ArrayList<String>> extractdata = new HashMap<>();
-		File projectDir = new File(args[0]);
+		File projectDir = new File(filePath);
 		ClassDependencies classDepencies = new ClassDependencies();
 		
 		Set<String> keySetControllers = mapControllerAndDependencies.keySet();
@@ -431,12 +432,12 @@ public static Map<String, String> interfaceImplMap = null;
 	// public static Map<String, Set<String>> mapClassAndDependencies = null;
 
 	// public static Map<String, Set<String>> classNameAndDependants = null;
-	public static void getCall(String srcFolder) {
-		classNameAndLocation = ListInterface.getlistOfClassOrInterface(new File(srcFolder));
+	public static void getCall(String filePath) {
+		classNameAndLocation = ListInterface.getlistOfClassOrInterface(new File(filePath));
 		//classNames = classNameAndLocation.keySet();
-		interfaceImplMap = ListInterface.listImplementation(new File(srcFolder), classNameAndLocation.keySet());
-		listOfControllers = ListMethods.getClassesWithMethodNames(new File(srcFolder)).keySet();
+		interfaceImplMap = ListInterface.listImplementation(new File(filePath), classNameAndLocation.keySet());
+		listOfControllers = ListMethods.getClassesWithMethodNames(new File(filePath), filePath).keySet();
 		mapControllerAndDependencies = new HashMap<String, Set<String>>();
-		load (srcFolder);
+		load (filePath);
 	}
 }

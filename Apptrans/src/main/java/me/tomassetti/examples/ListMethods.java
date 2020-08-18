@@ -3,6 +3,7 @@ package me.tomassetti.examples;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -29,7 +30,7 @@ public class ListMethods {
 	static List<String> listOfControllerClasses = new ArrayList<String>();
 	static String INIT = "Controller";
 
-	public static Map<String, List<String>> getClassesWithMethodNames(File srcFolder) {
+	public static Map<String, List<String>> getClassesWithMethodNames(File projectDir , String filePath) {
 
 		Map<String, List<String>> collector = new HashMap<String, List<String>>();
 		collector.put(INIT, new ArrayList<String>()); // equivalent to init
@@ -71,22 +72,22 @@ public class ListMethods {
 
 					}
 
-				}.visit(getCompilationUnit(file), collector); // change to collector.
+				}.visit(getCompilationUnit(file, filePath), collector); // change to collector.
 				System.out.println(); // empty line
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
 		}
 
-		).explore(srcFolder);
+		).explore(projectDir);
 
 		return collector;
 	}
 
 	@SuppressWarnings("deprecation")
-	public static CompilationUnit getCompilationUnit(File srcFolder ) throws FileNotFoundException {
+	public static CompilationUnit getCompilationUnit( File file, String filePath) throws FileNotFoundException {
 
-		CombinedTypeSolver combinedTypeSolver = getCombinedTypeSolver(srcFolder);
+		CombinedTypeSolver combinedTypeSolver = getCombinedTypeSolver(filePath);
 
 		JavaSymbolSolver symbolSolver = new JavaSymbolSolver(combinedTypeSolver);
 
@@ -94,14 +95,14 @@ public class ListMethods {
 				.setSymbolResolver(symbolSolver);
 
 		StaticJavaParser.setConfiguration(config);
-		return StaticJavaParser.parse(srcFolder);
+		return StaticJavaParser.parse(file);
 
 	}
 
-	public static CombinedTypeSolver getCombinedTypeSolver(File srcFolder) {
+	public static CombinedTypeSolver getCombinedTypeSolver(String filePath) {
 		TypeSolver reflectionTypeSolver = new ReflectionTypeSolver();
-		System.out.println(srcFolder);
-		TypeSolver javaParserTypeSolver = new JavaParserTypeSolver(srcFolder);
+		System.out.println(filePath);
+		TypeSolver javaParserTypeSolver = new JavaParserTypeSolver(filePath + "/main/java");
 		CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
 		combinedTypeSolver.add(reflectionTypeSolver);
 		combinedTypeSolver.add(javaParserTypeSolver);
@@ -123,7 +124,7 @@ public class ListMethods {
 		final String filePath = args[0];
 		File projectDir = new File(args[0]);
 		
-		Map<String, List<String>> map = getClassesWithMethodNames(projectDir);
+		Map<String, List<String>> map = getClassesWithMethodNames(projectDir , filePath);
 		analyser(map);
 		sourceanalyser(args[0]);
 		getControllers(args[0]);
@@ -131,10 +132,10 @@ public class ListMethods {
 	
 	}
 	
-	public static Map<String, List<String>> getControllers(String srcFolder) {
+	public static Map<String, List<String>> getControllers(String filePath) {
 		
-		File projectDir = new File(srcFolder);
-		Map<String, List<String>> map = getClassesWithMethodNames(projectDir);
+		File projectDir = new File(filePath);
+		Map<String, List<String>> map = getClassesWithMethodNames(projectDir , filePath);
 		Set<String> keySet = map.keySet();
 
 		for (String key : keySet) {
@@ -167,9 +168,9 @@ public class ListMethods {
 		return root;
 	}
 	
-	public static ParentItem sourceanalyser(String srcfolder) {
-		File projectDir = new File(srcfolder);
-		Map<String, List<String>> map = getClassesWithMethodNames(projectDir);
+	public static ParentItem sourceanalyser(String filePath) {
+		File projectDir = new File(filePath);
+		Map<String, List<String>> map = getClassesWithMethodNames(projectDir, filePath);
 		ParentItem results =   analyser(map);
 		return results;
 		
