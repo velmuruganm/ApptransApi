@@ -88,7 +88,8 @@ public class homecontroller  {
 	@GetMapping(path="/{className}/{methodName}")
 	public String getClassAndMethod (@PathVariable("className")String className,@PathVariable("methodName")String methodName) throws Exception
 	{	
-		ClassDependencies.main(new String[]{ className ,methodName});
+//		ClassDependencies.main(new String[]{ className ,methodName});
+		ClassDependencies.extractController(className, methodName);
   	    return "Class Name :"+className+"  "+"Method Name :"+methodName;
 
 	}

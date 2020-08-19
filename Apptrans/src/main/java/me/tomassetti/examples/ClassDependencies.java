@@ -280,7 +280,6 @@ public static void load (String filePath) {
 		}
 		Set<String> keySetControllers = mapControllerAndDependencies.keySet();
 		//String methodName = args[1].split("-")[0];
-		
 
 		for (String key : keySetControllers) {
 			
@@ -294,24 +293,33 @@ public static void load (String filePath) {
 		// mapControllerAndDependencies - has full dependencies for each controller.
 	}
 
+	
+
 	public static void main(String[] args) {
 		final String filePath = args[0];
 		getCall(filePath);
 		HashMap<String, ArrayList<String>> extractdata = new HashMap<>();
 		File projectDir = new File(filePath);
 		ClassDependencies classDepencies = new ClassDependencies();
-		
+		mapControllerAndDependencies = new HashMap<String, Set<String>>();
+	}
+
+	public static void extractController(String className , String methodName ) {
+		HashMap<String, ArrayList<String>> extractdata = new HashMap<>();
+		System.out.println(className);
+		System.out.println(methodName);
+		mapControllerAndDependencies = new HashMap<String, Set<String>>();
 		Set<String> keySetControllers = mapControllerAndDependencies.keySet();
-		String methodName = args[1].split("-")[0];
-		extractdata.put(args[0], new ArrayList<String>());
+		String methodName1 = methodName.split("-")[0];
+		extractdata.put(className, new ArrayList<String>());
 
 		for (String key : keySetControllers) {
-			if (key.contains(args[0])) {
+			if (key.contains(className)) {
 				System.out.println("Controller Key : " + key + " Full Dependecies  Value : "
 						+ mapControllerAndDependencies.get(key));
-				if (!extractdata.get(args[0]).contains(mapControllerAndDependencies.get(key))) {
+				if (!extractdata.get(className).contains(mapControllerAndDependencies.get(key))) {
 					// extractdata.put(methodName.split(" ")[0],new ArrayList<String>());
-					extractdata.get(args[0]).addAll(mapControllerAndDependencies.get(key));
+					extractdata.get(className).addAll(mapControllerAndDependencies.get(key));
 
 				}
 			}
@@ -320,7 +328,7 @@ public static void load (String filePath) {
 		try {
 
 			try {
-				CopyFile.copyFile(extractdata, methodName);
+				CopyFile.copyFile(extractdata, methodName1);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -331,7 +339,6 @@ public static void load (String filePath) {
 			e.printStackTrace();
 		}
 	}
-
 	public  void recursiveCall(final String controller, Set<String> dependencies) {
 
 		// if (dependencies.size() == 0) return; --implicit

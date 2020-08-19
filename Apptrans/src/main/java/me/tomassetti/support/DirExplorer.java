@@ -19,8 +19,8 @@ public class DirExplorer {
         this.fileHandler = fileHandler;
     }
 
-    public void explore(File srcFolder) {
-        explore(0, "", srcFolder);
+    public void explore(File root) {
+        explore(0, "", root);
     }
 
     private void explore(int level, String path, File file) {
