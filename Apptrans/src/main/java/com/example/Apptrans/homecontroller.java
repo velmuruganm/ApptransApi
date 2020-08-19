@@ -41,6 +41,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 
 import me.tomassetti.examples.ListMethods;
+import me.tomassetti.examples.ListParsedDependancies;
 import me.tomassetti.examples.ParentItem;
 import flexjson.JSONSerializer;
 
@@ -66,6 +67,7 @@ public class homecontroller  {
 		ParentItem results = ListMethods.sourceanalyser(srcfolder.replace(".","\\"));
 		ClassDependencies.main(new String[] {srcfolder.replace(".","\\") });
 		ListInterface.main(new String[] {srcfolder.replace(".","\\") });
+		ListParsedDependancies.main(new String[] {srcfolder.replace(".","\\") });
 		Gson gson = new Gson();
 		String json = gson.toJson(results.getItems());
 	      return json;

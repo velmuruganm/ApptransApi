@@ -21,7 +21,7 @@ import me.tomassetti.support.DirExplorer;
 
 public class ListInterface {
 
-	public static Map<String, String> listImplementation(File projectDir, Set<String>  classNames ) {
+	public static Map<String, String> listImplementation(File projectDir, Set<String>  classNames , String filePath) {
 		
 		System.out.println ("Scanning for Interface & its implementation Starts#");
 		Map<String, String> retVal = new HashMap<String, String>();
@@ -30,7 +30,7 @@ public class ListInterface {
 			try {
 
 				VoidVisitor<Map<String, String>> implNameCollector = new ImplNameCollector(classNames);
-				implNameCollector.visit(ListParsedDependancies.getCompilationUnit(file), retVal);
+				implNameCollector.visit(ListParsedDependancies.getCompilationUnit(file, filePath), retVal);
 				// methodNames.forEach(n -> retVal.add(n));
 			} catch (IOException e) {
 				throw new RuntimeException(e);
@@ -40,7 +40,7 @@ public class ListInterface {
 		return retVal;
 	}
 
-	public  static Map<String, String> getlistOfClassOrInterface(File projectDir) {
+	public  static Map<String, String> getlistOfClassOrInterface(File projectDir , String filePath ) {
 		Set<String>  classNames = new HashSet<String>();
 		Map<String, String> mapClassNames = new HashMap<String,String > ();
 		List<String> classesInaFile = new ArrayList <String>();
@@ -51,8 +51,8 @@ public class ListInterface {
 
 				VoidVisitor<Set<String>> classNameCollector = new ClassNameCollector();
 				VoidVisitor<List<String>> classMapCollector = new ClassNameMapCollector();
-				classNameCollector.visit(ListParsedDependancies.getCompilationUnit(file), classNames);
-				classMapCollector.visit(ListParsedDependancies.getCompilationUnit(file), classesInaFile);
+				classNameCollector.visit(ListParsedDependancies.getCompilationUnit(file, filePath), classNames);
+				classMapCollector.visit(ListParsedDependancies.getCompilationUnit(file , filePath), classesInaFile);
 				// methodNames.forEach(n -> retVal.add(n));
 				classesInaFile.stream().forEach(item -> mapClassNames.put(item, path));
 				classesInaFile.clear();
@@ -80,10 +80,11 @@ public class ListInterface {
 
 	
 	public static void main(String[] args) {
+		final String filePath = args[0];
 		File projectDir = new File(args[0]);
-		Map<String, String> classNames = getlistOfClassOrInterface(projectDir);
+		Map<String, String> classNames = getlistOfClassOrInterface(projectDir , filePath);
 		
-		Map<String, String> map = listImplementation(projectDir, classNames.keySet());
+		Map<String, String> map = listImplementation(projectDir, classNames.keySet(), filePath);
 		map.forEach( (key, val) -> 
 		{
 			System.out.println ("Collected key " + key + " and Value " + val);

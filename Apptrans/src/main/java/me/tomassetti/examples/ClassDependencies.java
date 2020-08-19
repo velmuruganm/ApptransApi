@@ -440,9 +440,9 @@ public static Map<String, String> interfaceImplMap = null;
 
 	// public static Map<String, Set<String>> classNameAndDependants = null;
 	public static void getCall(String filePath) {
-		classNameAndLocation = ListInterface.getlistOfClassOrInterface(new File(filePath));
+		classNameAndLocation = ListInterface.getlistOfClassOrInterface(new File(filePath), filePath);
 		//classNames = classNameAndLocation.keySet();
-		interfaceImplMap = ListInterface.listImplementation(new File(filePath), classNameAndLocation.keySet());
+		interfaceImplMap = ListInterface.listImplementation(new File(filePath), classNameAndLocation.keySet(), filePath);
 		listOfControllers = ListMethods.getClassesWithMethodNames(new File(filePath), filePath).keySet();
 		mapControllerAndDependencies = new HashMap<String, Set<String>>();
 		load (filePath);

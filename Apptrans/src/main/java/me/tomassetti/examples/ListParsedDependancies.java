@@ -35,7 +35,7 @@ import me.tomassetti.support.DirExplorer;
 public class ListParsedDependancies {
 	static List<String> listOfControllerClasses = new ArrayList<String>();
 
-	public static void listClasses(File projectDir) {
+	public static void listClasses(File projectDir , String filePath) {
 		new DirExplorer((level, path, file) -> path.endsWith("Controller.java"), (level, path, file) ->
 
 		{
@@ -75,7 +75,7 @@ public class ListParsedDependancies {
 									System.out.println(" [L " + mce.getBegin().get().line + "] " + mce);
 									try {
 
-										CombinedTypeSolver combinedTypeSolver = getCombinedTypeSolver();
+										CombinedTypeSolver combinedTypeSolver = getCombinedTypeSolver(filePath);
 										JavaParserFacade javaParserFacade = JavaParserFacade.get(combinedTypeSolver);
 										SymbolReference<ResolvedMethodDeclaration> methodRef = javaParserFacade
 												.solve(mce);
@@ -132,7 +132,7 @@ public class ListParsedDependancies {
 
 					}
 
-				}.visit(getCompilationUnit(file), null);
+				}.visit(getCompilationUnit(file , filePath), null);
 				System.out.println(); // empty line
 			} catch (IOException e) {
 				throw new RuntimeException(e);
@@ -149,9 +149,9 @@ public class ListParsedDependancies {
 	}
 
 	@SuppressWarnings("deprecation")
-	public static CompilationUnit getCompilationUnit(File file) throws FileNotFoundException {
+	public static CompilationUnit getCompilationUnit(File file , String filePath) throws FileNotFoundException {
 
-		CombinedTypeSolver combinedTypeSolver = getCombinedTypeSolver();
+		CombinedTypeSolver combinedTypeSolver = getCombinedTypeSolver(filePath);
 
 		JavaSymbolSolver symbolSolver = new JavaSymbolSolver(combinedTypeSolver);
 
@@ -163,7 +163,7 @@ public class ListParsedDependancies {
 
 	}
 
-	public static CombinedTypeSolver getCombinedTypeSolver() {
+	public static CombinedTypeSolver getCombinedTypeSolver(String filePath) {
 		TypeSolver reflectionTypeSolver = new ReflectionTypeSolver();
 		TypeSolver javaParserTypeSolver = new JavaParserTypeSolver(filePath + "/main/java");
 		CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
@@ -196,12 +196,14 @@ public class ListParsedDependancies {
 	}
 
 	public static void main(String[] args) {
+		final String filePath = args[0];
 		File projectDir = new File(filePath);
 		file = projectDir;
+		getstart(filePath);
 		// new
 		// File("D:/github/analyze-java-code-examples/src/main/java/me/tomassetti/examples");
 
-		listClasses(projectDir);
+		listClasses(projectDir , filePath);
 		// listMethodCalls(projectDir);
 	}
 
@@ -283,16 +285,16 @@ public class ListParsedDependancies {
 						+ "\\org\\springframework\\webflow\\spring-js-resources\\2.3.3.RELEASE\\spring-js-resources-2.3.3.RELEASE.jar");
 	}
 
-	public final static String filePath = "source_to_parse/ShoppingCart-master/src"; // TODO: Change to location of source parse here.
+//	public final static String filePath = "source_to_parse/ShoppingCart-master/src"; // TODO: Change to location of source parse here.
 
 	public static File file = null;
 
 	public static Map<String, String> interfaceImplMap = null;
 	public static Set<String> classNames = null;
 	public static Map<String, String>  classNameAndLocation = null;
-	static {
-		classNameAndLocation = ListInterface.getlistOfClassOrInterface(new File(filePath));
+	public static void getstart(String filePath) {
+		classNameAndLocation = ListInterface.getlistOfClassOrInterface(new File(filePath), filePath);
 		classNames = classNameAndLocation.keySet();
-		interfaceImplMap = ListInterface.listImplementation(new File(filePath), classNames);
+		interfaceImplMap = ListInterface.listImplementation(new File(filePath), classNames , filePath);
 	}
 }
