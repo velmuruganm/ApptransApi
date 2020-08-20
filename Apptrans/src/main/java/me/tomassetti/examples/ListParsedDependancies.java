@@ -196,7 +196,14 @@ public class ListParsedDependancies {
 	}
 
 	public static void main(String[] args) {
-		final String filePath = args[0];
+		
+				
+				extractedMain(JarFolders.SRC_FOLDER);
+		
+	}
+
+	public static void extractedMain(final String filePath) {
+		//final String filePath = args[0];
 		File projectDir = new File(filePath);
 		file = projectDir;
 		getstart(filePath);
@@ -217,8 +224,8 @@ public class ListParsedDependancies {
 	public static Set<String> classNames = null;
 	public static Map<String, String>  classNameAndLocation = null;
 	public static void getstart(String filePath) {
-		classNameAndLocation = ListInterface.getlistOfClassOrInterface(new File(filePath), filePath);
+		classNameAndLocation = ListInterface.getlistOfClassOrInterface( filePath);
 		classNames = classNameAndLocation.keySet();
-		interfaceImplMap = ListInterface.listImplementation(new File(filePath), classNames , filePath);
+		interfaceImplMap = ListInterface.listImplementation( classNames , filePath);
 	}
 }

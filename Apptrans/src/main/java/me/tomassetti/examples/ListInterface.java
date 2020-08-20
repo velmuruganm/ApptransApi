@@ -21,7 +21,7 @@ import me.tomassetti.support.DirExplorer;
 
 public class ListInterface {
 
-	public static Map<String, String> listImplementation(File projectDir, Set<String>  classNames , String filePath) {
+	public static Map<String, String> listImplementation( Set<String>  classNames , String filePath) {
 		
 		System.out.println ("Scanning for Interface & its implementation Starts#");
 		Map<String, String> retVal = new HashMap<String, String>();
@@ -35,12 +35,12 @@ public class ListInterface {
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
-		}).explore(projectDir);
+		}).explore(new File (filePath ));
 		System.out.println ("Scanning for Interface & its implementation Ends#");
 		return retVal;
 	}
 
-	public  static Map<String, String> getlistOfClassOrInterface(File projectDir , String filePath ) {
+	public  static Map<String, String> getlistOfClassOrInterface( String filePath ) {
 		Set<String>  classNames = new HashSet<String>();
 		Map<String, String> mapClassNames = new HashMap<String,String > ();
 		List<String> classesInaFile = new ArrayList <String>();
@@ -59,7 +59,7 @@ public class ListInterface {
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
-		}).explore(projectDir);
+		}).explore(new File ( filePath ));
 		System.out.println ("Scanning for Classes or Interface Ends#");
 		
 		
@@ -80,11 +80,15 @@ public class ListInterface {
 
 	
 	public static void main(String[] args) {
-		final String filePath = args[0];
-		File projectDir = new File(args[0]);
-		Map<String, String> classNames = getlistOfClassOrInterface(projectDir , filePath);
 		
-		Map<String, String> map = listImplementation(projectDir, classNames.keySet(), filePath);
+		//File projectDir = new File(args[0]);
+		extractedMain(JarFolders.SRC_FOLDER);
+	}
+
+	private static void extractedMain(final String filePath) {
+		Map<String, String> classNames = getlistOfClassOrInterface(  filePath);
+		
+		Map<String, String> map = listImplementation( classNames.keySet(), filePath);
 		map.forEach( (key, val) -> 
 		{
 			System.out.println ("Collected key " + key + " and Value " + val);

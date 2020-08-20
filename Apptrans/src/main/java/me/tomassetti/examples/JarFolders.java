@@ -9,7 +9,7 @@ public class JarFolders {
 
 	public static List<String> getJarFolders() {
 	
-			String repositoryLocation = "C:\\Users\\44976\\.m2\\repository";
+			String repositoryLocation = "C:\\Users\\velmu\\.m2\\repository";
 			return Arrays.asList(
 	
 					repositoryLocation
@@ -67,13 +67,13 @@ public class JarFolders {
 							+ "\\org\\springframework\\security\\spring-security-acl\\4.1.5.RELEASE\\spring-security-acl-4.1.5.RELEASE.jar",
 					repositoryLocation
 							+ "\\org\\springframework\\security\\spring-security-web\\4.1.5.RELEASE\\spring-security-web-4.1.5.RELEASE.jar",
-	//				repositoryLocation + "\\com\\fasterxml\\jackson\\core\\jackson-core\\2.9.8\\jackson-core-2.9.8.jar",
-	//				repositoryLocation
-	//						+ "\\com\\fasterxml\\jackson\\core\\jackson-annotations\\2.9.8\\jackson-annotations-2.9.8.jar",
-	//				repositoryLocation
-	//						+ "\\com\\fasterxml\\jackson\\core\\jackson-databind\\2.9.8\\jackson-databind-2.9.8.jar",
-					repositoryLocation
-							+"\\com\\sun\\xml\\fastinfoset\\FastInfoset\\1.2.12\\FastInfoset-1.2.12.jar",
+//	//				repositoryLocation + "\\com\\fasterxml\\jackson\\core\\jackson-core\\2.9.8\\jackson-core-2.9.8.jar",
+//	//				repositoryLocation
+//	//						+ "\\com\\fasterxml\\jackson\\core\\jackson-annotations\\2.9.8\\jackson-annotations-2.9.8.jar",
+//	//				repositoryLocation
+//	//						+ "\\com\\fasterxml\\jackson\\core\\jackson-databind\\2.9.8\\jackson-databind-2.9.8.jar",
+//					repositoryLocation
+//							+"\\com\\sun\\xml\\fastinfoset\\FastInfoset\\1.2.12\\FastInfoset-1.2.12.jar",
 					repositoryLocation
 							+ "\\org\\springframework\\webflow\\spring-webflow\\2.3.3.RELEASE\\spring-webflow-2.3.3.RELEASE.jar",
 					repositoryLocation + "\\opensymphony\\ognl\\2.6.11\\ognl-2.6.11.jar",
@@ -87,6 +87,6 @@ public class JarFolders {
 
 	
 
-	
+		public static String SRC_FOLDER  =  "C:/github/ShoppingCart/src";
 	
 }

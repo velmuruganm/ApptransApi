@@ -1,7 +1,7 @@
 package com.example.Apptrans;
 
 import org.apache.tomcat.jni.Address;
-import org.junit.Test;
+
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -63,11 +63,11 @@ public class homecontroller  {
     @Produces(MediaType.APPLICATION_JSON)
     public String getanalyser(@PathVariable("srcfolder")String srcfolder)throws Exception
     {
-		ListMethods.main(new String[]{ srcfolder.replace(".","\\") });
+		//ListMethods.main(new String[]{ srcfolder.replace(".","\\") });
 		ParentItem results = ListMethods.sourceanalyser(srcfolder.replace(".","\\"));
-		ClassDependencies.main(new String[] {srcfolder.replace(".","\\") });
-		ListInterface.main(new String[] {srcfolder.replace(".","\\") });
-		ListParsedDependancies.main(new String[] {srcfolder.replace(".","\\") });
+		//ClassDependencies.main(new String[] {srcfolder.replace(".","\\") });
+		//ListInterface.main(new String[] {srcfolder.replace(".","\\") });
+		//ListParsedDependancies.main(new String[] {srcfolder.replace(".","\\") });
 		Gson gson = new Gson();
 		String json = gson.toJson(results.getItems());
 	      return json;

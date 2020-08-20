@@ -33,6 +33,7 @@ import com.github.javaparser.resolution.UnsolvedSymbolException;
 import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedParameterDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
+import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade;
 import com.github.javaparser.symbolsolver.model.resolution.SymbolReference;
@@ -47,7 +48,7 @@ import me.tomassetti.support.DirExplorer;
 
 public class ClassDependencies {
 
-	public Map<String, Set<String>> listDependantClassesInaFolder(File projectDir , String filePath) {
+	public Map<String, Set<String>> listDependantClassesInaFolder( String filePath) {
 		Map<String, Set<String>> returnValue = new HashMap<String, Set<String>>();
 
 		new DirExplorer((level, path, file) -> path.endsWith(".java"), (level, path, file) ->
@@ -79,15 +80,20 @@ public class ClassDependencies {
 						n.findAll(FieldDeclaration.class).forEach(field -> {
 							 field.getVariables().forEach(variable -> {
 	                                // Print the field's class type
-	                                String variable_Type = variable.getType().resolve().describe();
+								 	ResolvedType  resolvedType = variable.getType().resolve();
+								 	//resolvedType.isWildcard();
+								 	resolvedType.isReference();
+	                                String variable_Type = resolvedType.describe();
 	                                System.out.println("Variable Type :=>" +  variable_Type);
+	                                
 	                                Set<String> dep = collector.get(n.getFullyQualifiedName().get());
 	                                if (classNames .contains(variable_Type)) {
 	                                    dep.add(variable_Type);
 	                                    System.out.println("Variable Type added :=>" + variable.getType());
 	                                }
 	                                // Print the field's name
-	                                // TODO : type is custom defined to be added as dependent.
+	                              
+	                              
 	                                System.out.println("Variable Name :=>" + variable.getName());
 
 	 
@@ -107,7 +113,7 @@ public class ClassDependencies {
 									System.out.println(" [L " + mce.getBegin().get().line + "] " + mce);
 									try {
 
-										CombinedTypeSolver combinedTypeSolver = getCombinedTypeSolver(projectDir, filePath);
+										CombinedTypeSolver combinedTypeSolver = getCombinedTypeSolver(new File (filePath), filePath);
 										JavaParserFacade javaParserFacade = JavaParserFacade.get(combinedTypeSolver);
 										SymbolReference<ResolvedMethodDeclaration> methodRef = javaParserFacade
 												.solve(mce);
@@ -194,7 +200,7 @@ public class ClassDependencies {
 			}
 		}
 
-		).explore(projectDir);
+		).explore(new File (filePath));
 
 		for (String key : returnValue.keySet()) {
 			System.out.println(" Key : " + key + "   Value : " + returnValue.get(key));
@@ -263,7 +269,7 @@ public static void load (String filePath) {
 		HashMap<String, ArrayList<String>> extractdata = new HashMap<>();
 		File projectDir = new File(filePath);
 		ClassDependencies classDepencies = new ClassDependencies();
-		mapClassAndDependencies = classDepencies.listDependantClassesInaFolder(projectDir, filePath);
+		mapClassAndDependencies = classDepencies.listDependantClassesInaFolder( filePath);
 
 		Set<String> keySet = mapClassAndDependencies.keySet();
 		for (String key : keySet) {
@@ -295,13 +301,22 @@ public static void load (String filePath) {
 
 	
 
-	public static void main(String[] args) {
-		final String filePath = args[0];
+	public static void main(String[] args) 
+	{
+		
+				extractedMain(JarFolders.SRC_FOLDER);
+	}
+
+	private static void extractedMain(final String filePath) {
+		//args[0];
 		getCall(filePath);
-		HashMap<String, ArrayList<String>> extractdata = new HashMap<>();
+		
 		File projectDir = new File(filePath);
-		ClassDependencies classDepencies = new ClassDependencies();
-		mapControllerAndDependencies = new HashMap<String, Set<String>>();
+		Set<String> keySetControllers = mapControllerAndDependencies.keySet();
+		System.out.println ("keySetControllers" + keySetControllers);
+		for (String key : keySetControllers)
+			System.out.print("Key " + key + ", Value " + mapClassAndDependencies.get(key));
+		
 	}
 
 	public static void extractController(String className , String methodName ) {
@@ -364,11 +379,11 @@ public static Map<String, String> interfaceImplMap = null;
 
 	// public static Map<String, Set<String>> classNameAndDependants = null;
 	public static void getCall(String filePath) {
-		classNameAndLocation = ListInterface.getlistOfClassOrInterface(new File(filePath), filePath);
+		classNameAndLocation = ListInterface.getlistOfClassOrInterface( filePath); //Get List of classes in the source file system.
 		//classNames = classNameAndLocation.keySet();
-		interfaceImplMap = ListInterface.listImplementation(new File(filePath), classNameAndLocation.keySet(), filePath);
-		listOfControllers = ListMethods.getClassesWithMethodNames(new File(filePath), filePath).keySet();
+		interfaceImplMap = ListInterface.listImplementation( classNameAndLocation.keySet(), filePath); //Get all interfaces & its implementation
+		listOfControllers = ListMethods.getClassesWithMethodNames( filePath).keySet(); //Get list of front Controllers.
 		mapControllerAndDependencies = new HashMap<String, Set<String>>();
-		load (filePath);
+		load (filePath); // Get one level of dependencies for a all classes in file system.
 	}
 }

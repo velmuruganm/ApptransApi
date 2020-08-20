@@ -29,7 +29,7 @@ public class ListMethods {
 	static List<String> listOfControllerClasses = new ArrayList<String>();
 	static String INIT = "Controller";
 
-	public static Map<String, List<String>> getClassesWithMethodNames(File projectDir , String filePath) {
+	public static Map<String, List<String>> getClassesWithMethodNames( String filePath) {
 
 		Map<String, List<String>> collector = new HashMap<String, List<String>>();
 		collector.put(INIT, new ArrayList<String>()); // equivalent to init
@@ -78,7 +78,7 @@ public class ListMethods {
 			}
 		}
 
-		).explore(projectDir);
+		).explore(new File (filePath));
 
 		return collector;
 	}
@@ -120,21 +120,24 @@ public class ListMethods {
 
 	public static void main(String[] args) {
 		
-		final String filePath = args[0];
-		File projectDir = new File(args[0]);
+	
+				
 		
-		Map<String, List<String>> map = getClassesWithMethodNames(projectDir , filePath);
+		
+		Map<String, List<String>> map = getClassesWithMethodNames( JarFolders.SRC_FOLDER);
 		analyser(map);
-		sourceanalyser(args[0]);
-		getControllers(args[0]);
+		sourceanalyser(JarFolders.SRC_FOLDER);
+		getControllers(JarFolders.SRC_FOLDER);
 		
 	
 	}
+
+	
 	
 	public static Map<String, List<String>> getControllers(String filePath) {
 		
 		File projectDir = new File(filePath);
-		Map<String, List<String>> map = getClassesWithMethodNames(projectDir , filePath);
+		Map<String, List<String>> map = getClassesWithMethodNames( filePath);
 		Set<String> keySet = map.keySet();
 
 		for (String key : keySet) {
@@ -169,7 +172,7 @@ public class ListMethods {
 	
 	public static ParentItem sourceanalyser(String filePath) {
 		File projectDir = new File(filePath);
-		Map<String, List<String>> map = getClassesWithMethodNames(projectDir, filePath);
+		Map<String, List<String>> map = getClassesWithMethodNames( filePath);
 		ParentItem results =   analyser(map);
 		return results;
 		
